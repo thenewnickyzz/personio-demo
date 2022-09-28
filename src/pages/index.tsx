@@ -1,15 +1,37 @@
+import { useEffect, useState } from "react"
+
 import { Autocomplete } from "@/components/Autocomplete"
 import { Table } from "@/components/Table"
-
+import { ErrorState } from "@/components/ErrorState"
 import useGetApplicants from "@/api-hooks/useGetApplicants"
-import ErrorState from "@/components/ErrorState/ErrorState"
+import Filter from "@/types/Filter"
+import { Tag } from "@/components/Tag"
+import { useRouter } from "next/router"
 
-export default function HomePage() {
-    const { data, isLoading } = useGetApplicants()
-    console.log("🚀 ~ file: index.tsx ~ line 9 ~ HomePage ~ data", data)
+interface HomePageProps {
+    filters: Filter[]
+}
 
-    const onSubmit = (data: { key: string; value: string }) => {
-        console.log("🚀 ~ file: index.tsx ~ line 9 ~ onSubmit ~ data", data)
+export default function HomePage(props: HomePageProps) {
+    const router = useRouter()
+    const { data, isLoading, error } = useGetApplicants()
+
+    const [filters, setFilters] = useState<Filter[]>(props.filters)
+
+    const onSubmit = (filter: Filter) => {
+        const newFilters = [...filters, filter]
+        setFilters(newFilters)
+        router.query.filters = JSON.stringify(newFilters)
+        router.push(router)
+    }
+
+    const removeFilter = (filter: Filter) => {
+        const newFilters = filters.filter(
+            ({ key, value }) => !(key === filter.key && value === filter.value)
+        )
+        setFilters(newFilters)
+        router.query.filters = JSON.stringify(newFilters)
+        router.push(router)
     }
 
     return (
@@ -20,27 +42,45 @@ export default function HomePage() {
                 </h1>
                 <div className="ml-40 flex-1">
                     <Autocomplete
-                        data={[]}
-                        loading={isLoading}
+                        data={data}
+                        loading={isLoading || !!error}
                         onSubmit={onSubmit}
                         searchKeys={["name", "positionApplied", "status"]}
                     />
                 </div>
             </div>
-            {data?.error ? (
-                <ErrorState className="mt-20">
-                    There was a problem with fetching your data.
+            <div className="mt-8 flex flex-wrap gap-2">
+                {filters.map(({ key, value }) => (
+                    <Tag
+                        key={key + value}
+                        keyCol={key}
+                        value={value}
+                        onClick={removeFilter}
+                        loading={isLoading || !!error}
+                    />
+                ))}
+            </div>
+            {error ? (
+                <ErrorState className="mt-10">
+                    There was a problem with fetching your data
                     <br />
                     Please try again later
                 </ErrorState>
             ) : (
                 <Table
-                    className="mt-20"
+                    className="mt-10"
                     loading={isLoading}
-                    rows={data?.data || []}
+                    rows={data}
                     sortBy={["name", "positionApplied"]}
                 />
             )}
         </div>
     )
+}
+
+HomePage.getInitialProps = async ({ query }: any) => {
+    if (!query.filters) {
+        return { filters: [] }
+    }
+    return { filters: JSON.parse(query.filters) }
 }

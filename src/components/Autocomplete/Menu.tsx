@@ -43,7 +43,7 @@ const Menu = (props: MenuProps) => {
     const data = enumData.length ? enumData : searchKeys
 
     return (
-        <div className="absolute top-full w-full bg-white">
+        <div className="absolute top-full w-full rounded-lg bg-white shadow-md">
             <div className="flex items-center justify-between px-5 pt-4 pb-6 text-lg font-medium text-text-600">
                 <span>Filter by:</span>
                 <button

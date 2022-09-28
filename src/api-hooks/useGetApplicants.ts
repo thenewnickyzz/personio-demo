@@ -9,13 +9,12 @@ const fetchApplicants = async (): Promise<InternalApiResponse<Applicant[]>> => {
 }
 
 const useGetApplicants = () => {
-    const { error, isLoading, data } = useQuery(
-        ["candidates"],
-        fetchApplicants,
-        { refetchOnWindowFocus: false, refetchOnReconnect: false }
-    )
+    const { isLoading, data } = useQuery(["candidates"], fetchApplicants, {
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+    })
 
-    return { data, isLoading, error }
+    return { data: data?.data || [], isLoading, error: data?.error }
 }
 
 export default useGetApplicants

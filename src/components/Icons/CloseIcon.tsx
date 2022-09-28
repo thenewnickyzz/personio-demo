@@ -1,6 +1,14 @@
 import React from "react"
 
-const CloseIcon = () => {
+interface CloseIconProps {
+    className?: string
+}
+
+const CloseIcon = (props: CloseIconProps) => {
+    const { className } = props
+
+    const svgClassName = className || "h-6 w-6"
+
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -8,7 +16,7 @@ const CloseIcon = () => {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="h-6 w-6"
+            className={svgClassName}
         >
             <path
                 strokeLinecap="round"

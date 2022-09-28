@@ -109,6 +109,9 @@ const Autocomplete = (props: AutocompleteProps) => {
             key: selectedKey,
             value: searchValue,
         })
+
+        setSearchValue("")
+        setSelectedKey(undefined)
     }
 
     return (
