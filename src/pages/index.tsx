@@ -14,9 +14,11 @@ interface HomePageProps {
 
 export default function HomePage(props: HomePageProps) {
     const router = useRouter()
-    const { data, isLoading, error } = useGetApplicants()
 
     const [filters, setFilters] = useState<Filter[]>(props.filters)
+
+    const { allApplicants, filteredApplicants, isLoading, error } =
+        useGetApplicants(filters)
 
     const onSubmit = (filter: Filter) => {
         const newFilters = [...filters, filter]
@@ -42,7 +44,7 @@ export default function HomePage(props: HomePageProps) {
                 </h1>
                 <div className="ml-40 flex-1">
                     <Autocomplete
-                        data={data}
+                        data={allApplicants}
                         loading={isLoading || !!error}
                         onSubmit={onSubmit}
                         searchKeys={["name", "positionApplied", "status"]}
@@ -70,7 +72,7 @@ export default function HomePage(props: HomePageProps) {
                 <Table
                     className="mt-10"
                     loading={isLoading}
-                    rows={data}
+                    rows={filteredApplicants}
                     sortBy={["name", "positionApplied"]}
                 />
             )}

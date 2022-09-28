@@ -1,6 +1,7 @@
 import React from "react"
 
 import { CloseIcon } from "@/components/Icons"
+import keyParseMap, { ApplicantKey } from "@/util/keyParseMap"
 
 interface ListItemProps {
     children: string
@@ -17,15 +18,17 @@ const ListItem = (props: ListItemProps) => {
         onClick(children)
     }
 
+    const label = keyParseMap[children as ApplicantKey] || children
+
     return (
         <li
             className="w-full cursor-pointer border-b border-zinc-200
-            py-4 px-5 text-text-500 outline-primary-300 hover:bg-zinc-100"
+            py-4 px-5 capitalize text-text-500 outline-primary-300 hover:bg-zinc-100"
             tabIndex={0}
             onClick={() => onClick(children)}
             onKeyDown={onEnter}
         >
-            {children}
+            {label}
         </li>
     )
 }

@@ -12,6 +12,7 @@ import { SearchableKey, searchTypesMap } from "@/components/Autocomplete/util"
 import { SearchIcon } from "@/components/Icons"
 
 import { Applicant } from "@/types/Applicant"
+import keyParseMap from "@/util/keyParseMap"
 
 interface AutocompleteProps {
     searchKeys: SearchableKey[]
@@ -49,7 +50,7 @@ const Autocomplete = (props: AutocompleteProps) => {
 
     const inputValue = useMemo(() => {
         if (selectedKey) {
-            return `${selectedKey}:${searchValue}`
+            return `${keyParseMap[selectedKey]}:${searchValue}`
         }
         return ""
     }, [selectedKey, searchValue])

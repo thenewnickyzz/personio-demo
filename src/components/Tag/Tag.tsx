@@ -1,5 +1,6 @@
 import { CloseIcon } from "@/components/Icons"
 import Filter from "@/types/Filter"
+import keyParseMap, { ApplicantKey } from "@/util/keyParseMap"
 import classNames from "classnames"
 import React from "react"
 
@@ -19,7 +20,7 @@ const Tag = (props: TagProps) => {
     )
     return (
         <div className={className}>
-            {keyCol}:{value}
+            {keyParseMap[keyCol as ApplicantKey]}:{value}
             <button
                 onClick={() => onClick({ key: keyCol, value })}
                 disabled={loading}
