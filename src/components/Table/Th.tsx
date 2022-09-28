@@ -31,7 +31,7 @@ const Th = (props: ThProps) => {
         }
     )
 
-    const arrowClassName = classnames("ml-1 transition", {
+    const arrowClassName = classnames("ml-1 transition text-text-600", {
         "rotate-180": sort.key === cell && sort.direction === "DSC",
     })
 

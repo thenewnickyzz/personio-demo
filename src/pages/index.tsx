@@ -8,41 +8,63 @@ import Filter from "@/types/Filter"
 import { Tag } from "@/components/Tag"
 import { useRouter } from "next/router"
 import Sort from "@/types/Sort"
+import PaginationType from "@/types/Pagination"
 import { ApplicantKey } from "@/util/keyParseMap"
+import { Pagination } from "@/components/Pagination"
 
 interface HomePageProps {
     filters: Filter[]
     sort: Sort
+    pagination: PaginationType
 }
 
 export default function HomePage(props: HomePageProps) {
-    console.log("🚀 ~ file: index.tsx ~ line 19 ~ HomePage ~ props", props)
     const router = useRouter()
 
     const [filters, setFilters] = useState<Filter[]>(props.filters)
     const [sort, setSort] = useState<Sort>(props.sort)
+    const [pagination, setPagination] = useState<PaginationType>(
+        props.pagination
+    )
 
-    const { allApplicants, filteredApplicants, isLoading, error } =
-        useGetApplicants(filters, sort)
+    const { allApplicants, paginatedApplicants, isLoading, error } =
+        useGetApplicants(filters, sort, pagination)
 
-    // When we add a new filter we want to also append it to the url query string
-    const onSubmit = (filter: Filter) => {
-        const newFilters = [...filters, filter]
-        setFilters(newFilters)
-        router.query.filters = JSON.stringify(newFilters)
+    const saveToQuery = (key: string, value: any) => {
+        router.query[key] = JSON.stringify(value)
         router.push(router)
     }
 
-    // When we remove a filter we want to also remove it from the url query string
+    const resetPagination = () => {
+        const newPagination = {
+            ...pagination,
+            pageNumber: 1,
+        }
+        setPagination(newPagination)
+        saveToQuery("pagination", newPagination)
+    }
+
+    // Add new filter, reset pagination and update the query string
+    const onSubmit = (filter: Filter) => {
+        const newFilters = [...filters, filter]
+
+        setFilters(newFilters)
+        saveToQuery("filters", newFilters)
+        resetPagination()
+    }
+
+    // Remove filter, reset pagination and update the query string
     const removeFilter = (filter: Filter) => {
         const newFilters = filters.filter(
             ({ key, value }) => !(key === filter.key && value === filter.value)
         )
+
         setFilters(newFilters)
-        router.query.filters = JSON.stringify(newFilters)
-        router.push(router)
+        saveToQuery("filters", newFilters)
+        resetPagination()
     }
 
+    // Change sort and update the query string
     const onSortClick = (key: ApplicantKey) => {
         const newSort: Sort = {
             key,
@@ -54,8 +76,28 @@ export default function HomePage(props: HomePageProps) {
                     : "ASC",
         }
         setSort(newSort)
-        router.query.sort = JSON.stringify(newSort)
-        router.push(router)
+        saveToQuery("sort", newSort)
+        resetPagination()
+    }
+
+    // Change pagination and update the query string
+    const onNextPage = () => {
+        const newPagination = {
+            ...pagination,
+            pageNumber: pagination.pageNumber + 1,
+        }
+        setPagination(newPagination)
+        saveToQuery("pagination", newPagination)
+    }
+
+    // Change pagination and update the query string
+    const onPreviousPage = () => {
+        const newPagination = {
+            ...pagination,
+            pageNumber: pagination.pageNumber - 1,
+        }
+        setPagination(newPagination)
+        saveToQuery("pagination", newPagination)
     }
 
     return (
@@ -91,14 +133,25 @@ export default function HomePage(props: HomePageProps) {
                     Please try again later
                 </ErrorState>
             ) : (
-                <Table
-                    className="mt-10"
-                    loading={isLoading}
-                    rows={filteredApplicants}
-                    sortBy={["name", "positionApplied"]}
-                    sort={sort}
-                    onSortClick={onSortClick}
-                />
+                <>
+                    <Table
+                        className="mt-10"
+                        loading={isLoading}
+                        rows={paginatedApplicants.applicants}
+                        sortBy={["name", "positionApplied"]}
+                        sort={sort}
+                        onSortClick={onSortClick}
+                    />
+                    {!isLoading && !error && (
+                        <Pagination
+                            page={paginatedApplicants.pageNumber}
+                            onNext={onNextPage}
+                            onPrevious={onPreviousPage}
+                            totalCount={paginatedApplicants.totalCount}
+                            rowsPerPage={paginatedApplicants.rowsPerPage}
+                        />
+                    )}
+                </>
             )}
         </div>
     )
@@ -110,6 +163,10 @@ HomePage.getInitialProps = async ({ query }: any) => {
         key: query.sort?.key || "name",
         direction: query.sort?.direction || "ASC",
     }
+    let pagination = {
+        rowsPerPage: 15,
+        pageNumber: 1,
+    }
 
     if (query.sort) {
         sort = JSON.parse(query.sort)
@@ -120,5 +177,9 @@ HomePage.getInitialProps = async ({ query }: any) => {
         filters = JSON.parse(query.filters)
     }
 
-    return { filters, sort }
+    if (query.pagination) {
+        pagination = JSON.parse(query.pagination)
+    }
+
+    return { filters, sort, pagination }
 }

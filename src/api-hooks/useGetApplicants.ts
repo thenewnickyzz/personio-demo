@@ -6,6 +6,7 @@ import Filter from "@/types/Filter"
 import { searchTypesMap } from "@/components/Autocomplete/util"
 import { ApplicantKey } from "@/util/keyParseMap"
 import Sort from "@/types/Sort"
+import Pagination from "@/types/Pagination"
 
 const fetchApplicants = async (): Promise<InternalApiResponse<Applicant[]>> => {
     const response = await fetch("/api/applicants")
@@ -20,7 +21,11 @@ const fetchApplicants = async (): Promise<InternalApiResponse<Applicant[]>> => {
  * @param filters
  * @returns
  */
-const useGetApplicants = (filters: Filter[], sort: Sort) => {
+const useGetApplicants = (
+    filters: Filter[],
+    sort: Sort,
+    pagination: Pagination
+) => {
     const { isLoading, data } = useQuery(["candidates"], fetchApplicants, {
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,
@@ -49,9 +54,21 @@ const useGetApplicants = (filters: Filter[], sort: Sort) => {
             : b[sort.key].toString().localeCompare(a[sort.key].toString())
     )
 
+    const paginatedApplicants = sortedApplicants.slice(
+        (pagination.pageNumber - 1) * pagination.rowsPerPage,
+        pagination.pageNumber * pagination.rowsPerPage
+    )
+
+    const totalCount = sortedApplicants.length
+
     return {
         allApplicants,
-        filteredApplicants: sortedApplicants,
+        paginatedApplicants: {
+            pageNumber: pagination.pageNumber,
+            applicants: paginatedApplicants,
+            rowsPerPage: pagination.rowsPerPage,
+            totalCount,
+        },
         isLoading,
         error: data?.error,
     }

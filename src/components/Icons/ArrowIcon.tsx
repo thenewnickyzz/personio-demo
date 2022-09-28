@@ -15,7 +15,7 @@ const ArrowIcon = (props: ArrowIconProps) => {
             fill="none"
             viewBox="0 0 24 24"
             strokeWidth={2.5}
-            stroke={colors.zinc[600]}
+            stroke="currentColor"
             className={classNames}
         >
             <path
