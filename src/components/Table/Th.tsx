@@ -3,16 +3,20 @@ import classnames from "classnames"
 import { ArrowIcon } from "@/components/Icons"
 
 import { Applicant } from "@/types/Applicant"
+import { ApplicantKey } from "@/util/keyParseMap"
+import Sort from "@/types/Sort"
 
 interface ThProps {
-    cell: keyof Applicant
+    cell: ApplicantKey
     children: string
     loading: boolean
+    onClick: (key: ApplicantKey) => void
     sortable?: boolean
+    sort: Sort
 }
 
 const Th = (props: ThProps) => {
-    const { children, cell, sortable, loading } = props
+    const { children, cell, sortable, loading, sort, onClick } = props
 
     const className = classnames(
         "p-4",
@@ -27,11 +31,21 @@ const Th = (props: ThProps) => {
         }
     )
 
+    const arrowClassName = classnames("ml-1 transition", {
+        "rotate-180": sort.key === cell && sort.direction === "DSC",
+    })
+
     return (
-        <th className={className} tabIndex={sortable ? 0 : undefined}>
+        <th
+            className={className}
+            tabIndex={sortable ? 0 : undefined}
+            onClick={() => onClick(cell)}
+        >
             <div className="flex items-center">
                 {children}
-                {sortable && !loading && <ArrowIcon className="ml-1" />}
+                {sortable && !loading && (
+                    <ArrowIcon className={arrowClassName} />
+                )}
             </div>
         </th>
     )

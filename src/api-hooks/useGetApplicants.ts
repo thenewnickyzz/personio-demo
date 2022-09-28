@@ -5,6 +5,7 @@ import InternalApiResponse from "@/types/InternalApiResponse"
 import Filter from "@/types/Filter"
 import { searchTypesMap } from "@/components/Autocomplete/util"
 import { ApplicantKey } from "@/util/keyParseMap"
+import Sort from "@/types/Sort"
 
 const fetchApplicants = async (): Promise<InternalApiResponse<Applicant[]>> => {
     const response = await fetch("/api/applicants")
@@ -12,12 +13,14 @@ const fetchApplicants = async (): Promise<InternalApiResponse<Applicant[]>> => {
 }
 
 /**
- * This hook is responsible for the synthetic filtering since we don't have an api to do it
+ * This hook is responsible for the synthetic filtering, sorting and pagination since we don't have an api to do it
+ *
+ * The order of operations is filter -> sort -> paginate
  *
  * @param filters
  * @returns
  */
-const useGetApplicants = (filters: Filter[]) => {
+const useGetApplicants = (filters: Filter[], sort: Sort) => {
     const { isLoading, data } = useQuery(["candidates"], fetchApplicants, {
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,
@@ -40,7 +43,18 @@ const useGetApplicants = (filters: Filter[]) => {
           )
         : allApplicants
 
-    return { allApplicants, filteredApplicants, isLoading, error: data?.error }
+    const sortedApplicants = [...filteredApplicants].sort((a, b) =>
+        sort.direction === "ASC"
+            ? a[sort.key].toString().localeCompare(b[sort.key].toString())
+            : b[sort.key].toString().localeCompare(a[sort.key].toString())
+    )
+
+    return {
+        allApplicants,
+        filteredApplicants: sortedApplicants,
+        isLoading,
+        error: data?.error,
+    }
 }
 
 export default useGetApplicants

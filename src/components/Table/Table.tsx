@@ -6,11 +6,15 @@ import Td from "./Td"
 import Th from "./Th"
 
 import { Applicant } from "@/types/Applicant"
+import Sort from "@/types/Sort"
+import { ApplicantKey } from "@/util/keyParseMap"
 
 export interface TableProps {
     rows: Applicant[]
     loading: boolean
     sortBy: (keyof Applicant)[]
+    onSortClick: (key: ApplicantKey) => void
+    sort: Sort
     className?: string
 }
 
@@ -47,7 +51,7 @@ const loadingRows: Applicant[] = [...new Array(10)].fill(0).map(() => ({
 }))
 
 const Table = (props: TableProps) => {
-    const { rows, loading, sortBy, className } = props
+    const { rows, loading, sortBy, className, sort, onSortClick } = props
 
     const data = loading ? loadingRows : rows
 
@@ -61,6 +65,8 @@ const Table = (props: TableProps) => {
                             loading={loading}
                             cell={cell}
                             sortable={sortBy.includes(cell)}
+                            onClick={onSortClick}
+                            sort={sort}
                         >
                             {headingLabelMap[cell]}
                         </Th>

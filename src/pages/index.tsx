@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 import { Autocomplete } from "@/components/Autocomplete"
 import { Table } from "@/components/Table"
@@ -7,19 +7,25 @@ import useGetApplicants from "@/api-hooks/useGetApplicants"
 import Filter from "@/types/Filter"
 import { Tag } from "@/components/Tag"
 import { useRouter } from "next/router"
+import Sort from "@/types/Sort"
+import { ApplicantKey } from "@/util/keyParseMap"
 
 interface HomePageProps {
     filters: Filter[]
+    sort: Sort
 }
 
 export default function HomePage(props: HomePageProps) {
+    console.log("🚀 ~ file: index.tsx ~ line 19 ~ HomePage ~ props", props)
     const router = useRouter()
 
     const [filters, setFilters] = useState<Filter[]>(props.filters)
+    const [sort, setSort] = useState<Sort>(props.sort)
 
     const { allApplicants, filteredApplicants, isLoading, error } =
-        useGetApplicants(filters)
+        useGetApplicants(filters, sort)
 
+    // When we add a new filter we want to also append it to the url query string
     const onSubmit = (filter: Filter) => {
         const newFilters = [...filters, filter]
         setFilters(newFilters)
@@ -27,12 +33,28 @@ export default function HomePage(props: HomePageProps) {
         router.push(router)
     }
 
+    // When we remove a filter we want to also remove it from the url query string
     const removeFilter = (filter: Filter) => {
         const newFilters = filters.filter(
             ({ key, value }) => !(key === filter.key && value === filter.value)
         )
         setFilters(newFilters)
         router.query.filters = JSON.stringify(newFilters)
+        router.push(router)
+    }
+
+    const onSortClick = (key: ApplicantKey) => {
+        const newSort: Sort = {
+            key,
+            direction:
+                key !== sort.key
+                    ? "DSC"
+                    : sort.direction === "ASC"
+                    ? "DSC"
+                    : "ASC",
+        }
+        setSort(newSort)
+        router.query.sort = JSON.stringify(newSort)
         router.push(router)
     }
 
@@ -74,6 +96,8 @@ export default function HomePage(props: HomePageProps) {
                     loading={isLoading}
                     rows={filteredApplicants}
                     sortBy={["name", "positionApplied"]}
+                    sort={sort}
+                    onSortClick={onSortClick}
                 />
             )}
         </div>
@@ -81,8 +105,20 @@ export default function HomePage(props: HomePageProps) {
 }
 
 HomePage.getInitialProps = async ({ query }: any) => {
-    if (!query.filters) {
-        return { filters: [] }
+    let filters = []
+    let sort = {
+        key: query.sort?.key || "name",
+        direction: query.sort?.direction || "ASC",
     }
-    return { filters: JSON.parse(query.filters) }
+
+    if (query.sort) {
+        sort = JSON.parse(query.sort)
+    }
+
+    // TODO: might need to check if the keys are valid
+    if (query.filters) {
+        filters = JSON.parse(query.filters)
+    }
+
+    return { filters, sort }
 }
