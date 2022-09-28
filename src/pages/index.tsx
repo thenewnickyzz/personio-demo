@@ -2,9 +2,11 @@ import { Autocomplete } from "@/components/Autocomplete"
 import { Table } from "@/components/Table"
 
 import useGetApplicants from "@/api-hooks/useGetApplicants"
+import ErrorState from "@/components/ErrorState/ErrorState"
 
 export default function HomePage() {
     const { data, isLoading } = useGetApplicants()
+    console.log("🚀 ~ file: index.tsx ~ line 9 ~ HomePage ~ data", data)
 
     const onSubmit = (data: { key: string; value: string }) => {
         console.log("🚀 ~ file: index.tsx ~ line 9 ~ onSubmit ~ data", data)
@@ -25,12 +27,20 @@ export default function HomePage() {
                     />
                 </div>
             </div>
-            <Table
-                className="mt-20"
-                loading={isLoading}
-                rows={data?.data || []}
-                sortBy={["name", "positionApplied"]}
-            />
+            {data?.error ? (
+                <ErrorState className="mt-20">
+                    There was a problem with fetching your data.
+                    <br />
+                    Please try again later
+                </ErrorState>
+            ) : (
+                <Table
+                    className="mt-20"
+                    loading={isLoading}
+                    rows={data?.data || []}
+                    sortBy={["name", "positionApplied"]}
+                />
+            )}
         </div>
     )
 }
