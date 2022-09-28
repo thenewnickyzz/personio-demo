@@ -138,7 +138,11 @@ export default function HomePage(props: HomePageProps) {
                         className="mt-10"
                         loading={isLoading}
                         rows={paginatedApplicants.applicants}
-                        sortBy={["name", "positionApplied"]}
+                        sortBy={[
+                            "name",
+                            "positionApplied",
+                            "yearsOfExperience",
+                        ]}
                         sort={sort}
                         onSortClick={onSortClick}
                     />

@@ -48,11 +48,17 @@ const useGetApplicants = (
           )
         : allApplicants
 
-    const sortedApplicants = [...filteredApplicants].sort((a, b) =>
-        sort.direction === "ASC"
+    const sortedApplicants = [...filteredApplicants].sort((a, b) => {
+        if (typeof a[sort.key] === "number") {
+            return sort.direction === "ASC"
+                ? (a[sort.key] as number) - (b[sort.key] as number)
+                : (b[sort.key] as number) - (a[sort.key] as number)
+        }
+
+        return sort.direction === "ASC"
             ? a[sort.key].toString().localeCompare(b[sort.key].toString())
             : b[sort.key].toString().localeCompare(a[sort.key].toString())
-    )
+    })
 
     const paginatedApplicants = sortedApplicants.slice(
         (pagination.pageNumber - 1) * pagination.rowsPerPage,
