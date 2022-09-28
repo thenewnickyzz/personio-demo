@@ -8,6 +8,8 @@ The tech stack is primarily based on react, typescript, nextjs, tailwindcss, rea
 
 The project also includes eslint, prettier and commitlint.
 
+There is no library for state management since it was not needed and most applications don't need it either. The async operations and the storing of data is handled by react-query and the state updates are handled by hooks inside the main page (/src/pages/index.tsx).
+
 ## Instructions
 
 Before you run the app you will have to install the packages

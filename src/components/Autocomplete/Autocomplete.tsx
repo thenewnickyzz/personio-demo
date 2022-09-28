@@ -21,6 +21,13 @@ interface AutocompleteProps {
     data: Applicant[]
 }
 
+/**
+ * This is a built from scratch search component.
+ * The way it works is when you first focus on it,
+ * it will prompt the user with a menu of available columns for filtering.
+ * After selecting the column the user can type their search query or they can select
+ * from a list of options if the column is of enum type
+ */
 const Autocomplete = (props: AutocompleteProps) => {
     const { searchKeys, onSubmit, loading, data } = props
 
@@ -34,6 +41,8 @@ const Autocomplete = (props: AutocompleteProps) => {
 
     const enumData = useExtractEnumData(data, selectedKey)
 
+    // if no column was selected we want to populate the column first
+    // if the column type is not of enum type we want to close the menu
     const onColumnSelect = (label: string) => {
         if (!selectedKey) {
             setSelectedKey(label as SearchableKey)
@@ -55,8 +64,12 @@ const Autocomplete = (props: AutocompleteProps) => {
         return ""
     }, [selectedKey, searchValue])
 
+    // We don't want to open the menu after the column key has been selected unless it is an enum
     const onInputClick = () => {
-        if (selectedKey) {
+        if (
+            selectedKey &&
+            searchTypesMap[selectedKey as SearchableKey] !== "enum"
+        ) {
             return
         }
         setIsMenuOpen(true)
@@ -99,6 +112,7 @@ const Autocomplete = (props: AutocompleteProps) => {
         setIsMenuOpen(false)
     }
 
+    // We want to clear the column key and the search string after submitting
     const onAdd = (e: FormEvent) => {
         e.preventDefault()
 

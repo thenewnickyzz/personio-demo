@@ -40,7 +40,8 @@ const cellOrder: (keyof Applicant)[] = [
     "status",
 ]
 
-const loadingRows: Applicant[] = [...new Array(10)].fill(0).map(() => ({
+// Filler data for rendering a loading list
+const loadingRows: Applicant[] = [...new Array(15)].fill(0).map(() => ({
     name: randomWords({ min: 1, max: 3, join: " " }),
     email: `${randomWords({ exactly: 2, join: "." })}@gmail.com`,
     age: 25,
