@@ -1,15 +1,17 @@
 import React, {
     ChangeEvent,
     createRef,
+    FormEvent,
     useMemo,
     useState,
-    FormEvent,
 } from "react"
-import { SearchIcon } from "@/components/Icons"
-import { Applicant } from "@/types/Applicant"
-import { SearchableKey, searchTypesMap } from "@/components/Autocomplete/util"
-import useExtractEnumData from "@/components/Autocomplete/useExtractEnumData"
+
 import Menu from "@/components/Autocomplete/Menu"
+import useExtractEnumData from "@/components/Autocomplete/useExtractEnumData"
+import { SearchableKey, searchTypesMap } from "@/components/Autocomplete/util"
+import { SearchIcon } from "@/components/Icons"
+
+import { Applicant } from "@/types/Applicant"
 
 interface AutocompleteProps {
     searchKeys: SearchableKey[]
@@ -111,7 +113,7 @@ const Autocomplete = (props: AutocompleteProps) => {
 
     return (
         <form className="flex items-start" onSubmit={onAdd}>
-            <div className="relative mb-6 flex-1">
+            <div className="relative flex-1">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
                     <SearchIcon />
                 </div>
@@ -124,7 +126,8 @@ const Autocomplete = (props: AutocompleteProps) => {
                     disabled={loading}
                     className="
                     block w-full rounded-lg border border-zinc-300 bg-zinc-100 py-4 pr-2.5 pl-11
-                    text-text-700 placeholder:text-text-400 hover:border-primary-200 focus:outline-primary-400
+                    text-text-700 placeholder:text-text-400 hover:border-primary-400 focus:outline-primary-400
+                    disabled:border-zinc-200 disabled:text-text-300 disabled:placeholder:text-text-300
                 "
                     placeholder="Column:Search"
                     value={inputValue}
@@ -142,7 +145,7 @@ const Autocomplete = (props: AutocompleteProps) => {
             <button
                 disabled={loading || !selectedKey || !searchValue}
                 className="
-                    ml-6 rounded-lg bg-primary-600 py-4 px-8 font-medium text-white outline-primary-300 transition hover:bg-primary-700
+                    ml-4 rounded-lg bg-primary-600 py-4 px-8 font-medium text-white outline-primary-300 transition hover:bg-primary-700
                     active:scale-90 disabled:pointer-events-none disabled:bg-zinc-300
                 "
             >

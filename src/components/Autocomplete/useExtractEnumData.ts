@@ -1,6 +1,8 @@
-import { SearchableKey, searchTypesMap } from "./util"
-import { Applicant } from "@/types/Applicant"
 import { useMemo } from "react"
+
+import { SearchableKey, searchTypesMap } from "./util"
+
+import { Applicant } from "@/types/Applicant"
 
 // Extract all unique values by a given key
 const useExtractEnumData = (

@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react"
 import day from "dayjs"
+
 import Table, { TableProps } from "./Table"
 
 const props: TableProps = {

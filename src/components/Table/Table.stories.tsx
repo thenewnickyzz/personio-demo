@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react"
-import * as React from "react"
 import day from "dayjs"
 import randomWords from "random-words"
+import * as React from "react"
 
 import Table from "./Table"
 

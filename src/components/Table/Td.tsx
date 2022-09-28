@@ -1,6 +1,7 @@
-import { useMemo } from "react"
 import classnames from "classnames"
 import day from "dayjs"
+import { useMemo } from "react"
+
 import { Applicant } from "@/types/Applicant"
 
 interface TdProps {

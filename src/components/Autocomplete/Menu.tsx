@@ -1,5 +1,6 @@
-import { CloseIcon } from "@/components/Icons"
 import React from "react"
+
+import { CloseIcon } from "@/components/Icons"
 
 interface ListItemProps {
     children: string

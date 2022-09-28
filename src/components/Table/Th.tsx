@@ -1,15 +1,18 @@
 import classnames from "classnames"
-import { Applicant } from "@/types/Applicant"
+
 import { ArrowIcon } from "@/components/Icons"
+
+import { Applicant } from "@/types/Applicant"
 
 interface ThProps {
     cell: keyof Applicant
     children: string
+    loading: boolean
     sortable?: boolean
 }
 
 const Th = (props: ThProps) => {
-    const { children, cell, sortable } = props
+    const { children, cell, sortable, loading } = props
 
     const className = classnames(
         "p-4",
@@ -28,7 +31,7 @@ const Th = (props: ThProps) => {
         <th className={className} tabIndex={sortable ? 0 : undefined}>
             <div className="flex items-center">
                 {children}
-                {sortable && <ArrowIcon className="ml-1" />}
+                {sortable && !loading && <ArrowIcon className="ml-1" />}
             </div>
         </th>
     )
