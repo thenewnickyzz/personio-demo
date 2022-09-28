@@ -11,6 +11,7 @@ import Sort from "@/types/Sort"
 import PaginationType from "@/types/Pagination"
 import { ApplicantKey } from "@/util/keyParseMap"
 import { Pagination } from "@/components/Pagination"
+import { EmptyState } from "@/components/EmptyState"
 
 interface HomePageProps {
     filters: Filter[]
@@ -132,6 +133,12 @@ export default function HomePage(props: HomePageProps) {
                     <br />
                     Please try again later
                 </ErrorState>
+            ) : !isLoading && !paginatedApplicants.applicants.length ? (
+                <EmptyState className="mt-10">
+                    We couldn&apos;t find any applicants
+                    <br />
+                    Try changing the search criteria
+                </EmptyState>
             ) : (
                 <>
                     <Table
